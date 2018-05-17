@@ -10,6 +10,7 @@ namespace App\Controller;
 
 
 use App\Entity\Article;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\Serializer;
 use JMS\Serializer\SerializerBuilder;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -33,21 +34,42 @@ class ArticleController extends Controller
      *
      * @Route("/articles/{id}", name="article_show")
      */
-    public function showAction()
+    public function showAction(Article $article)
     {
-        $article = new Article();
-        $article
-            ->setTitle('Mon 1e article')
-            ->setContent('Le contenu de mon premier article')
-        ;
+        $data = $this->serializer->serialize(
+            $article,
+            'json',
+            SerializationContext::create()->setGroups(array('detail'))
+        );
 
-        $jsonContent = $this->serializer->serialize($article, 'json');
-
-        $response = new Response($jsonContent);
+        $response = new Response($data);
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
+    }
 
+    /**
+     * @Route("/articles", name="article_list")
+     * @Method({"GET"})
+     * @return Response
+     */
+    public function listAction()
+    {
+        $articles = $this->getDoctrine()
+                         ->getRepository(Article::class)
+                         ->findAll();
+
+        $data = $this->serializer->serialize(
+            $articles,
+            'json',
+            SerializationContext::create()->setGroups(array('list'))
+        );
+
+        $response = new Response($data);
+
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
     }
 
     /**

@@ -15,18 +15,24 @@ class Article
      * @ORM\Column(type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @Serializer\Groups({"list"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string")
+     *
      * @Serializer\Type("string")
+     * @Serializer\Groups({"detail","list"})
      */
     private $title;
 
     /**
      * @ORM\Column(type="text")
+     *
      * @Serializer\Type("string")
+     * @Serializer\Groups({"detail","list"})
      */
     private $content;
 
